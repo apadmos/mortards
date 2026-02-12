@@ -1,7 +1,7 @@
 import os
 
 
-class ToolFunctions:
+class BasicIO:
 
     def __init__(self, sandbox: str):
         self.sandbox = sandbox
@@ -70,3 +70,19 @@ class ToolFunctions:
             return hits[0]
 
         return f"FILE NOT FOUND {name}"
+
+    def backup_file(self, path):
+        """Create a backup before modifying."""
+        import shutil
+        backup_path = f"{path}.backup"
+        self.copy_file(path, backup_path)
+        return backup_path
+
+    def restore_backup(self, path):
+        """Restore from backup."""
+        import shutil
+        backup_path = f"{path}.backup"
+        if os.path.exists(backup_path):
+            self.copy_file(backup_path, path)
+            return True
+        return False
