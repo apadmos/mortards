@@ -16,11 +16,11 @@ class EchoAgent:
         self.chat = ChatHistory()
         self.chat.add_system_message(system_prompt, pinned=True)
 
-    def get_llm_response_to_chat(self) -> str:
+    def get_llm_response_to_chat(self) -> dict:
         print("🤔🤔🤔")
-        return self.chat.get_messages()[-1].message
+        return self.chat.get_messages()[-1]
 
-    def process_llm_response(self, response:str) -> str:
+    def process_llm_response(self, response:dict) -> dict:
         """The response has not been added to the chat yet. It can be acted on, doctored, or replaced"""
         return response
 
@@ -72,7 +72,7 @@ class EchoAgent:
                 return None
             resp = self.process_llm_response(resp)
             if resp:
-                self.chat.add_assistant_message(resp)
+                self.chat.add_assistant_message(resp["content"], resp.get("thinking"))
             self.print_chat_state()
             return None
 

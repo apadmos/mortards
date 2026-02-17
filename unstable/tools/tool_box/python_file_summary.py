@@ -1,5 +1,4 @@
 import ast
-import os
 
 def get_function_signature(path, function_name):
     """Get the signature of a specific function without reading whole file."""
@@ -53,41 +52,6 @@ def get_imports(path):
             imports.append(f"from {node.module}")
     return imports
 
-def get_project_structure():
-    """Get overview of project organization."""
-    structure = {}
-    for root, dirs, files in os.walk("."):
-        # Skip hidden and virtual env
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d != 'venv']
-
-        rel_root = root.replace("./", "")
-        py_files = [f for f in files if f.endswith('.py')]
-        if py_files:
-            structure[rel_root] = py_files
-    return structure
-
-
-def get_related_files(path):
-    """Find files likely related to this one."""
-    # Same directory
-    dirname = os.path.dirname(path)
-    basename = os.path.basename(path).replace('_controller.py', '')
-
-    related = []
-
-    # Look for matching data access
-    da_path = f"data_access/{basename}_data_access.py"
-    if os.path.exists(da_path):
-        related.append(da_path)
-
-    # Look for matching templates
-    template_path = f"templates/{basename}_*.html"
-    import glob
-    related.extend(glob.glob(template_path))
-
-    return related
-
-
 def get_file_summary(path):
     """Get a summary of what's in a file without reading it all."""
     functions = list_functions(path)
@@ -98,5 +62,5 @@ def get_file_summary(path):
         'path': path,
         'classes': [c['name'] for c in classes],
         'functions': [f['name'] for f in functions],
-        'imports': imports[:5]  # First 5 imports
+        'imports': imports
     }
