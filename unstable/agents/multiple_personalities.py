@@ -20,12 +20,19 @@ If the assignment is complex you must return the word "plan" as the first line o
             coder = AgentExecution()
             coder.run(p)
         else:
+            plan = self.chat.get_last_user_message()
+            p = f"Please plan the execution for this assignment:\n\n{plan.message}"
             planner = AgentPlanner()
-            planner.run()
+            planner.run(p, nag=False)
             plan = planner.chat.get_last_assistant_message()
             coder = AgentExecution()
-            p = f"Execute the FIRST undone step of this plan:\n\n{plan.message}"
-            coder.run(p)
+            p = f"Execute the FIRST incomplete step of this plan:\n\n{plan.message}"
+            coder.run(p, nag=True)
+            self.chat.add_system_message("A step of your plan has been completed. "
+                                       "Please check the project  update your plan. "
+                                       "Respond with \"plan\" on the first line and your updated plan under that", pinned=False)
+            self.get_llm_response_to_chat()
+
 
 
 

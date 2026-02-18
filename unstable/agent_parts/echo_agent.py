@@ -62,7 +62,7 @@ class EchoAgent:
             print(f"Showing last 10 messages of {len(messages)}")
         print("\n".join([str(msg) for msg in messages]))
 
-    def run(self, initial_user_message: str = None) -> ChatHistory:
+    def run(self, initial_user_message: str = None, nag=False) -> ChatHistory:
 
         def do_loop(user_input:str) -> None:
             self.chat.add_user_message(user_input)
@@ -73,6 +73,9 @@ class EchoAgent:
             self.chat.add_assistant_message(resp["content"], resp.get("thinking"))
             self.print_chat_state()
             self.after_llm_response()
+            if nag and initial_user_message:
+                self.chat.add_system_message(f"Remember, your assignment was specifically: {initial_user_message}. "
+                                                f"If this is already complete, respond with 'done'.", pinned=False)
             return None
 
         if initial_user_message:

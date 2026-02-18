@@ -21,7 +21,7 @@ class ChatHistory:
     def add_assistant_message(self, content:str, thinking:str=None, pinned:bool=False):
         self.add_message(ChatMessage(content, role="assistant", thinking=thinking,  pinned=pinned))
 
-    def add_system_message(self, content:str, pinned:bool=True):
+    def add_system_message(self, content:str, pinned:bool=False):
         self.add_message(ChatMessage(content, role="system", pinned=pinned))
 
     def get_messages(self):
