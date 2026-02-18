@@ -6,10 +6,11 @@ from agent_parts.echo_agent import EchoAgent
 
 class LlmAgent(EchoAgent):
 
-    def __init__(self, system_prompt:str, model_name:str="gpt-oss:20b"):
+    def __init__(self, system_prompt:str, model_name:str="gpt-oss:20b", short_name:str="Agent"):
         super().__init__(system_prompt)
         self.model_name = model_name
         self.ollama_url = "http://localhost:11434/api/chat"
+
 
 
     def get_llm_response_to_chat(self) -> dict:

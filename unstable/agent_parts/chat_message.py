@@ -1,11 +1,12 @@
 import datetime
 class ChatMessage:
 
-    def __init__(self, message: str, role: str, thinking:str=None, timestamp: datetime.datetime = None, pinned:bool=False):
+    def __init__(self, message: str, role: str, thinking:str=None, nickname:str=None, timestamp: datetime.datetime = None, pinned:bool=False):
         self.message = message
         self.thinking = thinking
         self.role = role
         self.timestamp = timestamp
+        self.nickname = nickname or ''
         self.pinned = pinned
 
     def __repr__(self):
@@ -15,7 +16,7 @@ class ChatMessage:
             icon_str = "🤖"
         elif self.role == "user":
             icon_str = "🫠"
-        base_str = f"{icon_str}{pinned_str}:{self.message}"
+        base_str = f"{icon_str}{self.nickname}{pinned_str}:{self.message}"
         if self.thinking:
             return f"{base_str}\n💭{self.thinking}💭"
         return base_str

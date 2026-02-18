@@ -18,8 +18,8 @@ class ChatHistory:
     def add_user_message(self, content:str, pinned:bool=False):
         self.add_message(ChatMessage(content, role="user", pinned=pinned))
 
-    def add_assistant_message(self, content:str, thinking:str=None, pinned:bool=False):
-        self.add_message(ChatMessage(content, role="assistant", thinking=thinking,  pinned=pinned))
+    def add_assistant_message(self, content:str, thinking:str=None, pinned:bool=False, nickname:str=None):
+        self.add_message(ChatMessage(content, role="assistant", thinking=thinking,  pinned=pinned, nickname=nickname))
 
     def add_system_message(self, content:str, pinned:bool=False):
         self.add_message(ChatMessage(content, role="system", pinned=pinned))

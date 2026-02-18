@@ -24,9 +24,14 @@ class ToolBox:
             "restore_backup": self.restore_backup,
             "inspect_python_file": get_file_summary,
             "locate_file": find_file,
+            "find_file": find_file,
             "search_in_files": search_in_files,
             "get_project_structure": lambda: get_project_structure(self.write_sandbox)
         }
+
+    def execute_tool(self, tool_name, args:dict):
+        return self.all_tools()[tool_name](**args)
+
 
     def check_path(self, path: str, sandbox: str) -> str:
         """Expands a path to absolute and checks if it's in one of the sandboxes."""

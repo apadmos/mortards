@@ -3,16 +3,18 @@ import os
 import requests
 
 from agent_parts.chat_history import ChatHistory
+from tools.tool_box import ToolBox
 
 
 class EchoAgent:
 
-    def __init__(self, system_prompt:str):
+    def __init__(self, system_prompt:str, short_name:str="EchoAgent"):
         """
         This "agent" is just the logic for chat interactions, input, output, branching, etc.
         :param sandbox:
         :param model:
         """
+        self.short_name = short_name
         self.chat = ChatHistory()
         self.chat.add_system_message(system_prompt, pinned=True)
 
@@ -63,16 +65,17 @@ class EchoAgent:
         print("\n".join([str(msg) for msg in messages]))
 
     def run(self, initial_user_message: str = None, nag=False) -> ChatHistory:
-
+        tools  = ToolBox()
         def do_loop(user_input:str) -> None:
             self.chat.add_user_message(user_input)
             resp = self.get_llm_response_to_chat()
             if not resp:
                 print("🤯 No assistant response 🤯")
                 return None
-            self.chat.add_assistant_message(resp["content"], resp.get("thinking"))
+            self.chat.add_assistant_message(resp["content"], resp.get("thinking"), nickname=self.short_name)
             self.print_chat_state()
             self.after_llm_response()
+
             if nag and initial_user_message:
                 self.chat.add_system_message(f"Remember, your assignment was specifically: {initial_user_message}. "
                                                 f"If this is already complete, respond with 'done'.", pinned=False)

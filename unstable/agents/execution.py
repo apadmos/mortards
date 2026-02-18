@@ -33,3 +33,7 @@ CODE STYLE:
 - Use context managers: with MainDB() as db:
         """, model_name="qwen3-coder")
         """"gpt-oss:20b"""
+
+if __name__ == "__main__":
+    agent = AgentExecution()
+    agent.run()
