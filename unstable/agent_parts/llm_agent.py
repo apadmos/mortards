@@ -1,6 +1,3 @@
-import os
-from email.message import Message
-
 import requests
 
 from agent_parts.chat_history import ChatHistory
@@ -29,10 +26,6 @@ class LlmAgent(EchoAgent):
         resp = resp.json()
         msg = resp["message"]
         return msg
-
-    def process_llm_response(self, response:dict) -> dict:
-        return response
-
 
 
 

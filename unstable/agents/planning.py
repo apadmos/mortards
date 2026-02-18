@@ -1,11 +1,17 @@
 from agent_parts.llm_agent import LlmAgent
 
 
-class CodingDeligation(LlmAgent):
+class AgentPlanner(LlmAgent):
 
     def __init__(self):
         super().__init__(system_prompt="""
 You are a coding task overseer. You plan work and delegate to a specialist coding agent.
+
+AVAILABLE TOOLS: ls, read_file, search_in_files, find_file, web_search
+
+TOOL EXECUTION FORMAT - Use XML tags:
+<tool>search_in_files</tool>
+<arg>*test*</arg>
 
 === YOUR ROLE ===
 - Break complex tasks into simple steps
@@ -35,5 +41,5 @@ EXECUTION PLAN:
 
 
 if __name__ == "__main__":
-    agent = CodingDeligation()
+    agent = AgentPlanner()
     agent.run()

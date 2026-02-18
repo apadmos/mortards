@@ -20,9 +20,9 @@ class EchoAgent:
         print("🤔🤔🤔")
         return self.chat.get_messages()[-1]
 
-    def process_llm_response(self, response:dict) -> dict:
-        """The response has not been added to the chat yet. It can be acted on, doctored, or replaced"""
-        return response
+    def after_llm_response(self):
+        """the response has already been added to the chat, """
+        pass
 
     def large_input(self) -> str:
         lines = []
@@ -70,10 +70,9 @@ class EchoAgent:
             if not resp:
                 print("🤯 No assistant response 🤯")
                 return None
-            resp = self.process_llm_response(resp)
-            if resp:
-                self.chat.add_assistant_message(resp["content"], resp.get("thinking"))
+            self.chat.add_assistant_message(resp["content"], resp.get("thinking"))
             self.print_chat_state()
+            self.after_llm_response()
             return None
 
         if initial_user_message:

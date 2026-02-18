@@ -1,7 +1,7 @@
 from agent_parts.llm_agent import LlmAgent
 
 
-class SingleTaskDev(LlmAgent):
+class AgentExecution(LlmAgent):
 
     def __init__(self):
         super().__init__(system_prompt="""
@@ -13,7 +13,7 @@ WORKFLOW:
 3. Execute ONE tool at a time
 4. Verify each change before proceeding
 
-AVAILABLE TOOLS: ls, read_file, write_file, rm, find_file, rename_file, copy_file, web_search
+AVAILABLE TOOLS: check_code, compile_code, read_file, search_in_files, write_file, rm, find_file, rename_file, copy_file, web_search
 
 TOOL EXECUTION FORMAT - Use XML tags:
 <tool>write_file</tool>
@@ -32,3 +32,4 @@ CODE STYLE:
 - Controller files end with _controller.py
 - Use context managers: with MainDB() as db:
         """, model_name="qwen3-coder")
+        """"gpt-oss:20b"""

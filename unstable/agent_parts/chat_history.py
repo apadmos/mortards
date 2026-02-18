@@ -46,3 +46,26 @@ class ChatHistory:
     def replace_last(self, message: ChatMessage, count: int = 1):
         self.remove_last(count)
         self.add_message(message)
+
+
+    def trim_to(self, length:int):
+        cut = len(self._messages) - length
+        if cut > 0:
+            self._messages = self._messages[cut:]
+
+
+    def print_state(self):
+        messages = self.get_messages()
+        if len(messages) > 10:
+            messages = messages[-10:]
+            print(f"Showing last 10 messages of {len(messages)}")
+        print("\n".join([str(msg) for msg in messages]))
+
+    def get_last_message(self):
+        return self._messages[-1]
+
+    def get_last_assistant_message(self) -> ChatMessage | None:
+        for msg in reversed(self._messages):
+            if msg.role == "assistant":
+                return msg
+        return None
