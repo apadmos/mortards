@@ -1,17 +1,22 @@
 import os
 
+from tools.tool_drawers.file_read_write import FileReadWriteTools
 from tools.tool_drawers.python_file_summary import get_file_summary
 from tools.tool_drawers.search_functions import find_file, search_in_files, get_project_structure
 
 
 class ToolBox:
 
+
+    def __init__(self, write_sandbox:str):
+        self.file_read_write = FileReadWriteTools(write_sandbox=write_sandbox)
+
     def all_tools(self):
         return {
-            "ls": self.ls,
-            "write_file":  self.write_file,
+            "ls": self.file_read_write.read_or_ls,
+            "write_file":  self.file_read_write.write,
             "rename_file": self.rename_file,
-            "read_file": self.read_file,
+            "read_file": self.file_read_write.read_or_ls,
             "delete_file": self.delete_file,
             "copy_file": self.copy_file,
             "backup_file": self.backup_file,
@@ -26,7 +31,7 @@ class ToolBox:
     def execute_tool(self, args:dict):
         tool_name = args.pop("tool")
         tool = self.all_tools()[tool_name]
-        return tool(**args)
+        return tool(args)
 
 
     def check_path(self, path: str, sandbox: str) -> str:
@@ -39,19 +44,6 @@ class ToolBox:
                             f"Stop and ask the user for permissions.")
         return path
 
-    def ls(self, path):
-        path = self.check_path(path, self.read_sandbox)
-        try:
-            items = os.listdir(path)
-            return items
-        except FileNotFoundError:
-            return f"DIRECTORY NOT FOUND {path}"
-
-    def write_file(self, path, content):
-        path = self.check_path(path, self.write_sandbox)
-        with open(path, 'w') as f:
-            f.write(content)
-        return f"SUCCESS wrote contents to file {path}"
 
     def rename_file(self, old_path, dest_path):
         try:
@@ -70,12 +62,6 @@ class ToolBox:
         except FileNotFoundError:
             return f"FILE NOT FOUND {current_path}"
 
-    def read_file(self, path) -> str:
-        try:
-            with open(path, 'r') as f:
-                return f.read()
-        except FileNotFoundError:
-            return f"FILE NOT FOUND {path}"
 
     def delete_file(self, path):
         os.remove(path)

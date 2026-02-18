@@ -64,7 +64,7 @@ class EchoAgent:
         print("\n".join([str(msg) for msg in messages]))
 
     def run(self, initial_user_message: str = None, nag=False) -> ChatHistory:
-        tools  = ToolBox()
+        tools  = ToolBox(write_sandbox="media/")
         tool_picker = ToolCmdInterface()
         def do_loop(user_input:str) -> None:
             if user_input:

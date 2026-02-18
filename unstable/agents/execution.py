@@ -15,7 +15,7 @@ WORKFLOW:
 
 AVAILABLE TOOLS: 
  - check_code (loads python code and returns errors)
- - read_file (get the contents of a single file)
+ - read_file (get the contents of a single file from its path)
  - search_in_files (find files that contain a search pattern)
  - write_file (create or overwrite a file with contents)
  - rm (delete a file)
@@ -33,6 +33,9 @@ class UserController:
     def list_users(self, req, resp):
         return resp.json({"users": []})
 </content>
+
+MISTAKES YOU HAVE MADE BEFORE:
+- Trying to execute multiple tool calls at once
 
 CODE STYLE:
 - No try/except blocks (let exceptions propagate)

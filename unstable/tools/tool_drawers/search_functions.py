@@ -1,29 +1,72 @@
 import os
 import re
 
+from tools.tool_drawers.flexi_args import FlexiArgs
 
-def search_in_files(pattern=None, content=None, path=None, directory=None):
+def truncate_context(content, max_len):
+    if len(content) <= max_len:
+        return content
+    return content[:max_len] + '...'
+
+
+def truncate_around_match(content, match_start, max_len):
+    if len(content) <= max_len:
+        return content
+    half = max_len // 2
+    start = max(0, match_start - half)
+    end = min(len(content), start + max_len)
+    if end - start < max_len:
+        start = max(0, end - max_len)
+    prefix = '...' if start > 0 else ''
+    suffix = '...' if end < len(content) else ''
+    return prefix + content[start:end] + suffix
+
+def search_in_files(args):
+    args = FlexiArgs(args)
+
+    path = args.get("path,name,content")
+    pattern = args.get("pattern,regex")
+    exclude = args.get("exclude") or []
+    path = os.path.abspath(path)
     """Search for pattern across files (regex supported)."""
     results = []
 
-    pattern = pattern or content
     regex = re.compile(pattern)
-    extensions = [".py", ".css", ".txt"]
-    directory = directory or path
+    extensions = set([".py", ".css", ".txt"])- set(exclude)
 
-
-    for root, dirs, files in os.walk(directory):
+    MAX_LINE_LEN  = 750
+    CONTEXT_LINES = 3
+    for root, dirs, files in os.walk(path):
         for file in files:
             if any(file.endswith(ext) for ext in extensions):
                 path = os.path.join(root, file)
                 with open(path) as f:
-                    for i, line in enumerate(f, 1):
-                        if regex.search(line):
-                            results.append({
-                                'file': path,
-                                'line': i,
-                                'content': line.strip()
-                            })
+                    lines = f.readlines()
+                    for i, line in enumerate(lines):
+                        line_stripped = line.rstrip('\n')
+                        sr = regex.search(line_stripped)
+                        if not sr:
+                            continue
+
+                        content = truncate_around_match(line_stripped, sr.start(), MAX_LINE_LEN)
+
+                        context_before = [
+                            truncate_context(lines[j].rstrip('\n'), MAX_LINE_LEN)
+                            for j in range(max(0, i - CONTEXT_LINES), i)
+                        ]
+                        context_after = [
+                            truncate_context(lines[j].rstrip('\n'), MAX_LINE_LEN)
+                            for j in range(i + 1, min(len(lines), i + 1 + CONTEXT_LINES))
+                        ]
+
+                        results.append({
+                            'file': path,
+                            'line': i + 1,  # 1-indexed
+                            'content': content,
+                            'match_span': sr.span(),
+                            'context_before': context_before,
+                            'context_after': context_after,
+                        })
     return results
 
 def find_file(name=None, filename=None, path:str=None, recursive:bool=True) -> str:
