@@ -13,7 +13,16 @@ WORKFLOW:
 3. Execute ONE tool at a time
 4. Verify each change before proceeding
 
-AVAILABLE TOOLS: check_code, compile_code, read_file, search_in_files, write_file, rm, find_file, rename_file, copy_file, web_search
+AVAILABLE TOOLS: 
+ - check_code (loads python code and returns errors)
+ - read_file (get the contents of a single file)
+ - search_in_files (find files that contain a search pattern)
+ - write_file (create or overwrite a file with contents)
+ - rm (delete a file)
+ - find_file (locate a file based on its name)
+ - rename_file
+ - copy_file 
+ - web_search
 
 TOOL EXECUTION FORMAT - Use XML tags:
 <tool>write_file</tool>

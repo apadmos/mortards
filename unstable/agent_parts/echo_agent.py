@@ -67,7 +67,8 @@ class EchoAgent:
         tools  = ToolBox()
         tool_picker = ToolCmdInterface()
         def do_loop(user_input:str) -> None:
-            self.chat.add_user_message(user_input)
+            if user_input:
+                self.chat.add_user_message(user_input)
             resp = self.get_llm_response_to_chat()
             if not resp:
                 print("🤯 No assistant response 🤯")
@@ -86,6 +87,13 @@ class EchoAgent:
             if nag and initial_user_message:
                 self.chat.add_system_message(f"Remember, your assignment was specifically: {initial_user_message}. "
                                                 f"If this is already complete, respond with 'done'.", pinned=False)
+
+            if tool_results:
+                self.chat.add_assistant_message(tool_results, pinned=False)
+                self.print_chat_state()
+                do_loop('')
+
+
             return None
 
         if initial_user_message:

@@ -1,11 +1,16 @@
 import os
+import re
 
 
-def search_in_files(pattern, directory=".", extensions=[".py"]):
+def search_in_files(pattern=None, content=None, path=None, directory=None):
     """Search for pattern across files (regex supported)."""
-    import re, os
     results = []
+
+    pattern = pattern or content
     regex = re.compile(pattern)
+    extensions = [".py", ".css", ".txt"]
+    directory = directory or path
+
 
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -21,12 +26,14 @@ def search_in_files(pattern, directory=".", extensions=[".py"]):
                             })
     return results
 
-def find_file(name, path:str=None, recursive:bool=True) -> str:
+def find_file(name=None, filename=None, path:str=None, recursive:bool=True) -> str:
+    name = name or filename
     if path is None:
         path = '.'
+    path = os.path.abspath(path)
     hits = []
     for root, dirs, files in os.walk(path, topdown=recursive):
-        if name in files:
+        if name in files or name in dirs:
             hits.append(os.path.join(root, name))
     if hits:
         if len(hits) > 1:
