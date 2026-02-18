@@ -2,6 +2,8 @@
 from agent_parts.chat_history import ChatHistory
 
 from tools.tool_box import ToolBox
+from tools.tool_cmd_interface import ToolCmdInterface
+
 
 class EchoAgent:
 
@@ -63,6 +65,7 @@ class EchoAgent:
 
     def run(self, initial_user_message: str = None, nag=False) -> ChatHistory:
         tools  = ToolBox()
+        tool_picker = ToolCmdInterface()
         def do_loop(user_input:str) -> None:
             self.chat.add_user_message(user_input)
             resp = self.get_llm_response_to_chat()
@@ -71,8 +74,15 @@ class EchoAgent:
                 return None
             self.chat.add_assistant_message(resp["content"], resp.get("thinking"), nickname=self.short_name)
             self.print_chat_state()
-            self.after_llm_response()
 
+            tool_commands = tool_picker.parse_tool_requests(resp["content"]) or []
+            tool_results = ""
+            for tool_cmd in tool_commands:
+                tool_result = tools.execute_tool(tool_cmd)
+                tool_results += f"Result of {tool_cmd}: {tool_result}"
+
+
+            self.after_llm_response()
             if nag and initial_user_message:
                 self.chat.add_system_message(f"Remember, your assignment was specifically: {initial_user_message}. "
                                                 f"If this is already complete, respond with 'done'.", pinned=False)

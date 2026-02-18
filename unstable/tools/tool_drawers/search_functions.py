@@ -21,9 +21,9 @@ def search_in_files(pattern, directory=".", extensions=[".py"]):
                             })
     return results
 
-def find_file(self, name, path:str=None, recursive:bool=True) -> str:
+def find_file(name, path:str=None, recursive:bool=True) -> str:
     if path is None:
-        path = self.read_sandbox
+        path = '.'
     hits = []
     for root, dirs, files in os.walk(path, topdown=recursive):
         if name in files:

@@ -1,16 +1,10 @@
 import os
 
-from tools.tool_box.python_file_summary import get_file_summary
-from tools.tool_box.search_functions import find_file, search_in_files, get_project_structure
+from tools.tool_drawers.python_file_summary import get_file_summary
+from tools.tool_drawers.search_functions import find_file, search_in_files, get_project_structure
 
 
 class ToolBox:
-
-    def __init__(self, write_sandbox:str, read_sandbox:str, full_read_sandbox:str):
-        self.write_sandbox = write_sandbox
-        self.read_sandbox = read_sandbox
-        self.full_read_sandbox = full_read_sandbox
-
 
     def all_tools(self):
         return {
@@ -29,8 +23,10 @@ class ToolBox:
             "get_project_structure": lambda: get_project_structure(self.write_sandbox)
         }
 
-    def execute_tool(self, tool_name, args:dict):
-        return self.all_tools()[tool_name](**args)
+    def execute_tool(self, args:dict):
+        tool_name = args.pop("tool")
+        tool = self.all_tools()[tool_name]
+        return tool(**args)
 
 
     def check_path(self, path: str, sandbox: str) -> str:
@@ -59,8 +55,6 @@ class ToolBox:
 
     def rename_file(self, old_path, dest_path):
         try:
-            old_path = self.check_path(old_path, self.write_sandbox)
-            dest_path = self.check_path(dest_path, self.write_sandbox)
             os.rename(old_path, dest_path)
             return f"SUCCESS renamed {old_path} to {dest_path}"
         except FileNotFoundError:
@@ -68,18 +62,15 @@ class ToolBox:
 
     def copy_file(self, current_path, dest_path):
         try:
-            old_path = self.check_path(current_path, self.full_read_sandbox)
-            new_path = self.check_path(dest_path, self.write_sandbox)
 
-            content = self.read_file(old_path)
-            self.write_file(new_path, content)
+            content = self.read_file(current_path)
+            self.write_file(dest_path, content)
 
             return f"SUCCESS copied {current_path} to {dest_path}"
         except FileNotFoundError:
             return f"FILE NOT FOUND {current_path}"
 
     def read_file(self, path) -> str:
-        path = self.check_path(path, self.full_read_sandbox)
         try:
             with open(path, 'r') as f:
                 return f.read()
@@ -87,7 +78,6 @@ class ToolBox:
             return f"FILE NOT FOUND {path}"
 
     def delete_file(self, path):
-        path = self.check_path(path, self.write_sandbox)
         os.remove(path)
         return f"SUCCESS Deleted {path}"
 
