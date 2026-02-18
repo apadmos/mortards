@@ -1,10 +1,7 @@
-import os
-
-import requests
 
 from agent_parts.chat_history import ChatHistory
-from tools.tool_box import ToolBox
 
+from tools.tool_box import ToolBox
 
 class EchoAgent:
 
