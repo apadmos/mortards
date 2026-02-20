@@ -18,11 +18,13 @@ AVAILABLE TOOLS:
  - read_file (get the contents of a single file from its path)
  - search_in_files (find files that contain a search pattern)
  - write_file (create or overwrite a file with contents)
- - rm (delete a file)
- - find_file (locate a file based on its name)
+ - rm (delete a file or directory)
+ - find_file (locate a file by name)
  - rename_file
  - copy_file 
- - web_search
+ - web_search 
+ - explore_project - (Lists files in project with their paths, functions, classes, or other details)
+ - summarize_project
 
 TOOL EXECUTION FORMAT - Use XML tags:
 <tool>write_file</tool>
@@ -43,8 +45,8 @@ CODE STYLE:
 - Snake_case for files
 - Controller files end with _controller.py
 - Use context managers: with MainDB() as db:
-        """, model_name="qwen3-coder")
-        """"gpt-oss:20b"""
+        """, model_name="gpt-oss:20b")
+        """"gpt-oss:20b qwen3-coder"""
 
 if __name__ == "__main__":
     agent = AgentExecution()

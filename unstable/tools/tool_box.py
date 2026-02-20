@@ -1,7 +1,7 @@
 import os
 
+from tools.project_view import ProjectView
 from tools.tool_drawers.file_read_write import FileReadWriteTools
-from tools.tool_drawers.python_file_summary import get_file_summary
 from tools.tool_drawers.search_functions import find_file, search_in_files, get_project_structure
 
 
@@ -10,6 +10,7 @@ class ToolBox:
 
     def __init__(self, write_sandbox:str):
         self.file_read_write = FileReadWriteTools(write_sandbox=write_sandbox)
+        self.project_view = ProjectView(root_dir=".", project_dir="media", modules_di="subs")
 
     def all_tools(self):
         return {
@@ -21,11 +22,11 @@ class ToolBox:
             "copy_file": self.copy_file,
             "backup_file": self.backup_file,
             "restore_backup": self.restore_backup,
-            "inspect_python_file": get_file_summary,
             "locate_file": find_file,
             "find_file": find_file,
             "search_in_files": search_in_files,
-            "get_project_structure": lambda: get_project_structure(self.write_sandbox)
+            "explore_project": self.project_view.summarize_project,
+            "summarize_project": self.project_view.summarize_project
         }
 
     def execute_tool(self, args:dict):
