@@ -1,21 +1,23 @@
 import os
 
+from agent_parts.chat_parts.tool_request import ToolRequest
 from tools.project_view import ProjectView
 from tools.tool_drawers.file_read_write import FileReadWriteTools
-from tools.tool_drawers.search_functions import find_file, search_in_files, get_project_structure
+from tools.tool_drawers.internet_access import InternetAccess
+from tools.tool_drawers.search_functions import find_file, search_in_files
 
 
 class ToolBox:
 
-
-    def __init__(self, write_sandbox:str):
+    def __init__(self, write_sandbox: str):
         self.file_read_write = FileReadWriteTools(write_sandbox=write_sandbox)
         self.project_view = ProjectView(root_dir=".", project_dir="media", modules_di="subs")
+        self.internet = InternetAccess()
 
     def all_tools(self):
         return {
             "ls": self.file_read_write.read_or_ls,
-            "write_file":  self.file_read_write.write,
+            "write_file": self.file_read_write.write,
             "rename_file": self.rename_file,
             "read_file": self.file_read_write.read_or_ls,
             "delete_file": self.delete_file,
@@ -26,14 +28,16 @@ class ToolBox:
             "find_file": find_file,
             "search_in_files": search_in_files,
             "explore_project": self.project_view.summarize_project,
-            "summarize_project": self.project_view.summarize_project
+            "summarize_project": self.project_view.summarize_project,
+            "requests.get": self.internet.get,
+            "tool_requests.get": self.internet.get,
+            "request.get": self.internet.get,
+            "request": self.internet.get
         }
 
-    def execute_tool(self, args:dict):
-        tool_name = args.pop("tool")
-        tool = self.all_tools()[tool_name]
-        return tool(args)
-
+    def execute_tool(self, tool_request: ToolRequest):
+        tool = self.all_tools()[tool_request.name]
+        return tool(tool_request)
 
     def check_path(self, path: str, sandbox: str) -> str:
         """Expands a path to absolute and checks if it's in one of the sandboxes."""
@@ -44,7 +48,6 @@ class ToolBox:
             raise Exception(f"Path {path} is not in your sandbox {sandbox}. "
                             f"Stop and ask the user for permissions.")
         return path
-
 
     def rename_file(self, old_path, dest_path):
         try:
@@ -63,7 +66,6 @@ class ToolBox:
         except FileNotFoundError:
             return f"FILE NOT FOUND {current_path}"
 
-
     def delete_file(self, path):
         os.remove(path)
         return f"SUCCESS Deleted {path}"
@@ -81,5 +83,3 @@ class ToolBox:
             self.copy_file(backup_path, path)
             return True
         return False
-
-

@@ -37,17 +37,23 @@ class LLMAgent:
             if not resp:
                 print("🤯 No assistant response 🤯")
                 return None
-            resp: ChatMessage = self.llm_interface.parse_response(resp)
 
+            resp: ChatMessage = self.llm_interface.parse_response(resp)
+            self.chat.add_message(resp)
             if resp.tool_calls:
-                print("🧰 Structured tool calls... what now?")
+                self.print_chat_state()
+                tool_results = "TOOL CALL RESULTS:\n"
+                for tc in resp.tool_calls:
+                    result = tools.execute_tool(tc)
+                    tool_results += f"{tc.call_description}: {result}\n"
+                self.chat.add_system_message(tool_results, pinned=False)
+                self.print_chat_state()
                 return None
 
             if not resp.message and not resp.thinking:
                 print("🤯 No assistant thoughts or content 🤯")
                 return None
 
-            self.chat.add_message(resp)
             self.print_chat_state()
 
             """Nagging. Maybe if we remind the agent what they are supposed to be doing every message
@@ -62,6 +68,11 @@ class LLMAgent:
 
         while True:
             user_input = self.user_interface.get_user_input()
+            if user_input == "clear":
+                print("🔥 cleared context 🔥")
+                self.chat.clear()
+                continue
+
             if user_input == "quit":
                 break
             if user_input == "show":
@@ -70,8 +81,3 @@ class LLMAgent:
             do_loop(user_input)
 
         return self.chat
-
-
-if __name__ == "__main__":
-    ea = LLLMAgent(system_prompt="You are a brainless echo agent that just replies with what you are asked.")
-    ea.run()

@@ -8,15 +8,10 @@ class CoffeeTalkAgent(LLMAgent):
         super().__init__(system_prompt="""
         The user will talk to you about life problems ranging from therapy, mental health and diet to construction advice.
         
-        You have one executable tool called "requests" it if the Python requests library
-        and it allows you to make arbitrary web requests.
+        You have one executable tool called "requests.get". It is the Python requests library
+        and it allows you to make arbitrary web requests on the public internet.
         
-        For example if you want to google something you would use:
-        tool_name: requests
-        arguments: {
-            "method": "get"
-            "url": "search query
-        }
+        TOOL EXECUTION FORMAT IS JSON
         """, llm_interface=GPT3_OSS_20b())
 
 

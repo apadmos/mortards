@@ -15,9 +15,7 @@ class ConsoleInterface:
     def get_user_input(self):
         user_cmd = input("😎😕🤔: ")
         if user_cmd == "clear":
-            print("🔥 cleared context 🔥")
-            self.chat.clear()
-            return self.get_user_input()
+            return "clear"
 
         if user_cmd in ["s", "show"]:
             return "show"

@@ -37,7 +37,7 @@ class GPT3_OSS_20b:
         return ChatMessage(message=content,
                            thinking=thinking,
                            tool_calls=tools,
-                           role="assistant")
+                           role="assistant", raw=message)
 
     def parse_tool_request(self, tools):
         """This model seems to reply with:
@@ -58,8 +58,9 @@ class GPT3_OSS_20b:
         r = []
         for tool in tools:
             parts = tool["function"]
+            id = tool["id"]
             name = parts["name"]
             args = parts["arguments"]
-            tr = ToolRequest(name=name, args=args)
+            tr = ToolRequest(name=name, args=args, call_id=id)
             r.append(tr)
         return r

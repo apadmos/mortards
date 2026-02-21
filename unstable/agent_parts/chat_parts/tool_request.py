@@ -1,8 +1,12 @@
 class ToolRequest:
 
-    def __init__(self, name: str, args: dict):
+    def __init__(self, name: str, args: dict, call_id=None):
         self.name = name
         self.args = args or {}
+        self.call_description = call_id or self.description()
+
+    def description(self) -> str:
+        return f"{self.name}({", ".join([f"{k}={v}" for k, v in self.args.items()])})"
 
     def args_length(self) -> int:
         return len(self.args)
@@ -18,3 +22,6 @@ class ToolRequest:
         if required:
             raise ValueError(f"Provide at least one of the arguments {names}")
         return None
+
+    def __str__(self):
+        return self.description()
