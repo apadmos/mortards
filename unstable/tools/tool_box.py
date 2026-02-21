@@ -35,8 +35,10 @@ class ToolBox:
             "request": self.internet.get
         }
 
-    def execute_tool(self, tool_request: ToolRequest):
-        tool = self.all_tools()[tool_request.name]
+    def execute_tool(self, tool_request: ToolRequest) -> str:
+        tool = self.all_tools().get(tool_request.name)
+        if not tool:
+            return f"!!{tool_request.name} is not a registered tool, please stick to your provided tools!!"
         return tool(tool_request)
 
     def check_path(self, path: str, sandbox: str) -> str:

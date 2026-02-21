@@ -30,8 +30,6 @@ class ChatMessage:
             base_str += f"\n💭{self.thinking}💭"
         for t in self.tool_calls:
             base_str += f"\n🔧{t}🔧"
-        if self.raw:
-            base_str += f"\n{self.raw}"
         return base_str
 
     def __str__(self):

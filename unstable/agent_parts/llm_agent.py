@@ -28,8 +28,9 @@ class LLMAgent:
 
     def run(self, initial_user_message: str = None, nag=False) -> ChatHistory:
         tools = ToolBox(write_sandbox="media/")
+        unsupervised_limit = 2
 
-        def do_loop(user_input: str) -> None:
+        def do_loop(user_input: str, unsupervised_count: int) -> None:
             self.chat.trim_to(self.chat_length)
             if user_input:
                 self.chat.add_user_message(user_input)
@@ -48,7 +49,11 @@ class LLMAgent:
                     tool_results += f"{tc.call_description}: {result}\n"
                 self.chat.add_system_message(tool_results, pinned=False)
                 self.print_chat_state()
-                return None
+                if unsupervised_count < unsupervised_limit:
+                    return do_loop("", unsupervised_count + 1)
+                else:
+                    print("-----------The machine is going wild. Press Enter to continue, or say something-------")
+                    return None
 
             if not resp.message and not resp.thinking:
                 print("🤯 No assistant thoughts or content 🤯")
@@ -64,7 +69,7 @@ class LLMAgent:
             return None
 
         if initial_user_message:
-            do_loop(initial_user_message)
+            do_loop(initial_user_message, 0)
 
         while True:
             user_input = self.user_interface.get_user_input()
@@ -78,6 +83,6 @@ class LLMAgent:
             if user_input == "show":
                 self.print_chat_state()
                 continue
-            do_loop(user_input)
+            do_loop(user_input, 0)
 
         return self.chat
