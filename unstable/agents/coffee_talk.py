@@ -1,19 +1,23 @@
-from agent_parts.llm_agent import LlmAgent
+from agent_parts.llm_agent import LLMAgent
+from agent_parts.llm_interfaces.gpt_oss_20b import GPT3_OSS_20b
 
 
-class CoffeeTalkAgent(LlmAgent):
+class CoffeeTalkAgent(LLMAgent):
 
     def __init__(self):
         super().__init__(system_prompt="""
         The user will talk to you about life problems ranging from therapy, mental health and diet to construction advice.
         
-        You have one executable tool that allows you to search the web. It uses XML format, here is an example:
-        <tool>search</tool>
-        <query>keywords or URL</query>
-        <location>(optional) reddit, google, other specific website</location>
+        You have one executable tool called "requests" it if the Python requests library
+        and it allows you to make arbitrary web requests.
         
-        """, model_name="qwen3-coder")
-        """"gpt-oss:20b qwen3-coder"""
+        For example if you want to google something you would use:
+        tool_name: requests
+        arguments: {
+            "method": "get"
+            "url": "search query
+        }
+        """, llm_interface=GPT3_OSS_20b())
 
 
 if __name__ == "__main__":

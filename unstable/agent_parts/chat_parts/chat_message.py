@@ -1,16 +1,21 @@
 import datetime
 
+from agent_parts.chat_parts.tool_request import ToolRequest
+
 
 class ChatMessage:
 
     def __init__(self, message: str, role: str, thinking: str = None, nickname: str = None,
-                 timestamp: datetime.datetime = None, pinned: bool = False):
+                 timestamp: datetime.datetime = None,
+                 tool_calls: list[ToolRequest] = None,
+                 pinned: bool = False):
         self.message = message
         self.thinking = thinking
         self.role = role
         self.timestamp = timestamp
         self.nickname = nickname or ''
         self.pinned = pinned
+        self.tool_calls: list[ToolRequest] = tool_calls or []
 
     def __repr__(self):
         pinned_str = "[pinned]" if self.pinned else ""

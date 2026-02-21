@@ -1,6 +1,6 @@
 import datetime
 
-from agent_parts.chat_message import ChatMessage
+from agent_parts.chat_parts.chat_message import ChatMessage
 
 
 class ChatHistory:
@@ -15,26 +15,25 @@ class ChatHistory:
             message.timestamp = datetime.datetime.now()
         self._messages.append(message)
 
-    def add_user_message(self, content:str, pinned:bool=False):
+    def add_user_message(self, content: str, pinned: bool = False):
         self.add_message(ChatMessage(content, role="user", pinned=pinned))
 
-    def add_assistant_message(self, content:str, thinking:str=None, pinned:bool=False, nickname:str=None):
-        self.add_message(ChatMessage(content, role="assistant", thinking=thinking,  pinned=pinned, nickname=nickname))
+    def add_assistant_message(self, content: str, thinking: str = None, pinned: bool = False, nickname: str = None):
+        self.add_message(ChatMessage(content, role="assistant", thinking=thinking, pinned=pinned, nickname=nickname))
 
-    def add_system_message(self, content:str, pinned:bool=False):
+    def add_system_message(self, content: str, pinned: bool = False):
         self.add_message(ChatMessage(content, role="system", pinned=pinned))
 
     def get_messages(self):
         c = self._pinned_messages + self._messages
         return c
 
-    def clear(self, include_pinned:bool=False):
+    def clear(self, include_pinned: bool = False):
         self._messages = []
         if include_pinned:
             self._pinned_messages = []
 
-
-    def replace_all(self, message: ChatMessage, include_pinned:bool=False):
+    def replace_all(self, message: ChatMessage, include_pinned: bool = False):
         self.clear(include_pinned=include_pinned)
         self.add_message(message)
 
@@ -47,12 +46,10 @@ class ChatHistory:
         self.remove_last(count)
         self.add_message(message)
 
-
-    def trim_to(self, length:int):
+    def trim_to(self, length: int):
         cut = len(self._messages) - length
         if cut > 0:
             self._messages = self._messages[cut:]
-
 
     def print_state(self):
         messages = self.get_messages()

@@ -1,7 +1,39 @@
 import re
 
+import requests
 
-class ToolCmdInterface:
+from agent_parts.chat_parts.chat_history import ChatHistory
+from agent_parts.chat_parts.chat_message import ChatMessage
+
+
+class Qwen3CoderInterface:
+
+    def __init__(self):
+        self.model_name = "qwen3-coder"
+        self.ollama_url = "http://localhost:11434/api/chat"
+
+    def send_chat(self, chat: ChatHistory):
+        """Most models seem to accept the same payload, but some have a "history" field in
+        the response which makes me think even this part should be tailored to the model"""
+        print("🤔🤔🤔")
+        messages = chat.get_messages()
+        messages = [m.to_ollama_dict() for m in messages]
+        payload = {
+            "model": self.model_name,
+            "messages": messages,
+            "stream": False,
+        }
+        resp = requests.post(self.ollama_url, json=payload, timeout=3000)
+        resp.raise_for_status()
+        resp = resp.json()
+        return resp
+
+    def parse_response(self, resp_json) -> ChatMessage:
+        message = resp_json["message"]
+        content = message["content"]
+        thinking = message.get("thinking")
+        tools = self.parse_tool_requests(content)
+        return ChatMessage(message=content, role="assistant")
 
     def parse_tool_requests(self, llm_output: str) -> list[dict]:
         """
@@ -33,7 +65,6 @@ class ToolCmdInterface:
 
         return tools
 
-
     def parse_tool_request(self, llm_output: str) -> dict:
 
         # Extract tool name
@@ -62,7 +93,7 @@ class ToolCmdInterface:
 
 
 if __name__ == "__main__":
-    tc = ToolCmdInterface()
+    tc = Qwen3CoderInterface()
     print(tc.parse_tool_requests("""
     TOOL EXECUTION FORMAT:
     I think i'll tool around

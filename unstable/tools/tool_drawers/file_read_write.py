@@ -1,16 +1,15 @@
 import os
 
-from tools.tool_drawers.flexi_args import FlexiArgs
+from agent_parts.chat_parts.tool_request import ToolRequest
 
 
 class FileReadWriteTools:
 
-    def __init__(self, write_sandbox:str = None):
+    def __init__(self, write_sandbox: str = None):
         self.write_sandbox = write_sandbox
         self.has_read = set()
 
-    def read_or_ls(self, args):
-        args = FlexiArgs(args)
+    def read_or_ls(self, args: ToolRequest):
         path = args.get("path,name,content")
         path = os.path.abspath(path)
         if os.path.isdir(path):
@@ -33,10 +32,9 @@ class FileReadWriteTools:
             return contents
         return f"DIRECTORY NOT FOUND {path}"
 
-    def write(self, args):
-        args = FlexiArgs(args)
-        path  = args.get("path,name")
-        content  = args.get("contents,content,body")
+    def write(self, args: ToolRequest):
+        path = args.get("path,name")
+        content = args.get("contents,content,body")
         """create the directory if that doesn't exist"""
         with open(path, 'w') as f:
             f.write(content)

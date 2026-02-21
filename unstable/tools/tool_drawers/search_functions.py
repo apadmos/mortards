@@ -1,7 +1,8 @@
 import os
 import re
 
-from tools.tool_drawers.flexi_args import FlexiArgs
+from agent_parts.chat_parts.tool_request import ToolRequest
+
 
 def truncate_context(content, max_len):
     if len(content) <= max_len:
@@ -21,9 +22,8 @@ def truncate_around_match(content, match_start, max_len):
     suffix = '...' if end < len(content) else ''
     return prefix + content[start:end] + suffix
 
-def search_in_files(args):
-    args = FlexiArgs(args)
 
+def search_in_files(args: ToolRequest):
     path = args.get("path,name,content")
     pattern = args.get("pattern,regex")
     exclude = args.get("exclude") or []
@@ -32,9 +32,9 @@ def search_in_files(args):
     results = []
 
     regex = re.compile(pattern)
-    extensions = set([".py", ".css", ".txt"])- set(exclude)
+    extensions = set([".py", ".css", ".txt"]) - set(exclude)
 
-    MAX_LINE_LEN  = 750
+    MAX_LINE_LEN = 750
     CONTEXT_LINES = 3
     for root, dirs, files in os.walk(path):
         for file in files:
@@ -69,7 +69,8 @@ def search_in_files(args):
                         })
     return results
 
-def find_file(name=None, filename=None, path:str=None, recursive:bool=True) -> str:
+
+def find_file(name=None, filename=None, path: str = None, recursive: bool = True) -> str:
     name = name or filename
     if path is None:
         path = '.'
