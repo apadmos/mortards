@@ -1,7 +1,10 @@
 import datetime
+
+
 class ChatMessage:
 
-    def __init__(self, message: str, role: str, thinking:str=None, nickname:str=None, timestamp: datetime.datetime = None, pinned:bool=False):
+    def __init__(self, message: str, role: str, thinking: str = None, nickname: str = None,
+                 timestamp: datetime.datetime = None, pinned: bool = False):
         self.message = message
         self.thinking = thinking
         self.role = role
@@ -25,7 +28,8 @@ class ChatMessage:
         return self.__repr__()
 
     def to_ollama_dict(self):
-        return {
+        d = {
             "role": self.role,
             "content": self.message,
         }
+        return d
