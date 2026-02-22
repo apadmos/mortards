@@ -1,7 +1,8 @@
-from agent_parts.llm_agent import LlmAgent
+from agent_parts.llm_agent import LLMAgent
+from agent_parts.llm_interfaces.gpt_oss_20b import GPT3_OSS_20b
 
 
-class AgentExecution(LlmAgent):
+class AgentExecution(LLMAgent):
 
     def __init__(self):
         super().__init__(system_prompt="""
@@ -41,12 +42,11 @@ MISTAKES YOU HAVE MADE BEFORE:
 
 CODE STYLE:
 - No try/except blocks (let exceptions propagate)
-- Do not add new comments or docstrings
 - Snake_case for files
 - Controller files end with _controller.py
 - Use context managers: with MainDB() as db:
-        """, model_name="gpt-oss:20b")
-        """"gpt-oss:20b qwen3-coder"""
+        """, llm_interface=GPT3_OSS_20b())
+
 
 if __name__ == "__main__":
     agent = AgentExecution()
