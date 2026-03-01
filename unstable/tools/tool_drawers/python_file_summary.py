@@ -1,7 +1,8 @@
 import ast
 
+
 class PythonFileSummary:
-    
+
     def __init__(self, path):
         self.path = path
 
@@ -14,11 +15,18 @@ class PythonFileSummary:
                 args = [arg.arg for arg in node.args.args]
                 return f"def {function_name}({', '.join(args)})"
         return None
-    
+
     def list_functions(self):
         """List all functions/methods in a file."""
         with open(self.path) as f:
-            tree = ast.parse(f.read())
+            try:
+                tree = ast.parse(f.read())
+            except SyntaxError as e:
+                error = str(e) + " " + e.text
+                functions = [
+                    {"SyntaxError": error}
+                ]
+                return functions
         functions = []
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
@@ -29,7 +37,7 @@ class PythonFileSummary:
                     'line': node.lineno
                 })
         return functions
-    
+
     def list_classes(self):
         """List all classes and their methods."""
         with open(self.path) as f:
@@ -44,7 +52,7 @@ class PythonFileSummary:
                     'line': node.lineno
                 })
         return classes
-    
+
     def get_imports(self):
         """List all imports in a file."""
         with open(self.path) as f:
@@ -56,13 +64,13 @@ class PythonFileSummary:
             elif isinstance(node, ast.ImportFrom):
                 imports.append(f"from {node.module}")
         return imports
-    
+
     def get_file_summary(self):
         """Get a summary of what's in a file without reading it all."""
         functions = self.list_functions()
         classes = self.list_classes()
         imports = self.get_imports()
-    
+
         return {
             'self.path': self.path,
             'classes': [c['name'] for c in classes],
@@ -78,10 +86,9 @@ class PythonFileSummary:
             f"{func['name']}({', '.join(func.get('args', []))})"
             for func in functions
         ]
-        classes =[c['name'] for c in classes]
+        classes = [c['name'] for c in classes]
         imports = self.get_imports()
         if not signature_list and not classes and not imports:
             return "EMPTY PYTHON FILE"
-
 
         return f"FUNCTIONS: {signature_list}\nCLASSES: {classes} \nIMPORTS: {imports}"

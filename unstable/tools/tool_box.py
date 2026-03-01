@@ -36,6 +36,9 @@ class ToolBox:
         }
 
     def execute_tool(self, tool_request: ToolRequest) -> str:
+        if tool_request.name.startswith("repo_browser."):
+            tool_request.name = tool_request.name.replace("repo_browser.", "")
+
         tool = self.all_tools().get(tool_request.name)
         if not tool:
             return f"!!{tool_request.name} is not a registered tool, please stick to your provided tools!!"
