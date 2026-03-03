@@ -5,12 +5,12 @@ from tools.tool_drawers.python_file_summary import PythonFileSummary
 
 class ProjectView:
 
-    def __init__(self, root_dir:str, project_dir:str, modules_di:str):
+    def __init__(self, root_dir: str, project_dir: str, modules_di: str):
         self.root_dir = root_dir
         self.project_dir = project_dir
         self.modules_dir = modules_di
 
-    def walk_files(self, start_path, with_details:bool, prefix=''):
+    def walk_files(self, start_path, with_details: bool, prefix=''):
         output = ''
         entries = sorted(os.listdir(start_path))
         for entry in entries:
@@ -43,7 +43,7 @@ class ProjectView:
         with open(path, 'r', encoding='utf-8', errors='replace') as f:
             lines = f.readlines()
         line_count = len(lines)
-        preview = "".join(lines[:5])[:1500] # first 5 lines (or fewer)
+        preview = "".join(lines[:5])[:1500]  # first 5 lines (or fewer)
         if not preview:
             preview = "EMPTY FILE"
         return (
@@ -55,16 +55,16 @@ class ProjectView:
         return f"CONTAINS FILES: {os.listdir(path)}"
 
     def summarize_project_dir(self, path):
-        return f"SUMMARY OF PROJECT DIRECTORY: {path}\n{self.walk_files(path, with_details=True)}"
+        return f"SUMMARY OF MAIN PROJECT DIRECTORY: {path}\n{self.walk_files(path, with_details=True)}"
 
     def summarize_module_dir(self):
-        s = f"SUMMARY OF SUBMODULES:\n"
+        s = f"SUMMARY OF HELPER SUBMODULES:\n"
         for sub in ["crudepg", "servelamb", "servelamb_users", "fancycli"]:
             path = os.path.join('subs', sub)
-            s += f"{sub}: {self.walk_files(path, with_details=True)}\n"
+            s += f"{sub}: {self.walk_files(path, with_details=False)}\n"
         return s
 
-    def summarize_project(self, args:dict):
+    def summarize_project(self, args: dict):
         return f"{self.summarize_project_dir(self.project_dir)}\n{self.summarize_module_dir()}"
 
 

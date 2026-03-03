@@ -19,14 +19,7 @@ class PythonFileSummary:
     def list_functions(self):
         """List all functions/methods in a file."""
         with open(self.path) as f:
-            try:
-                tree = ast.parse(f.read())
-            except SyntaxError as e:
-                error = str(e) + " " + e.text
-                functions = [
-                    {"SyntaxError": error}
-                ]
-                return functions
+            tree = ast.parse(f.read())
         functions = []
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
@@ -79,8 +72,12 @@ class PythonFileSummary:
         }
 
     def __str__(self):
-        functions = self.list_functions()
-        classes = self.list_classes()
+        try:
+            functions = self.list_functions()
+            classes = self.list_classes()
+        except SyntaxError as e:
+            error = str(e) + " " + e.text
+            return f"FILE CONTAINS SYNTAX ERROR: {error}"
 
         signature_list = [
             f"{func['name']}({', '.join(func.get('args', []))})"

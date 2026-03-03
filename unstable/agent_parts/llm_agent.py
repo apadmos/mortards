@@ -1,7 +1,9 @@
+import os
+
 from agent_parts.chat_parts.chat_history import ChatHistory
 from agent_parts.chat_parts.chat_message import ChatMessage
+from agent_parts.chat_parts.tool_request import ToolRequest
 from agent_parts.user_interface.console_interface import ConsoleInterface
-
 from tools.tool_box import ToolBox
 
 
@@ -18,6 +20,8 @@ class LLMAgent:
         self.chat = ChatHistory()
         self.chat_length = chat_length
         self.chat.add_system_message(system_prompt, pinned=True)
+        self.focused_file = None
+        self.tools = ToolBox(write_sandbox="cms/")
 
     def print_chat_state(self):
         messages = self.chat.get_messages()
@@ -27,13 +31,18 @@ class LLMAgent:
         print("\n".join([str(msg) for msg in messages]))
 
     def run(self, initial_user_message: str = None, nag=False) -> ChatHistory:
-        tools = ToolBox(write_sandbox="media/")
+
         unsupervised_limit = 2
 
         def do_loop(user_input: str, unsupervised_count: int) -> None:
             self.chat.trim_to(self.chat_length)
             if user_input:
                 self.chat.add_user_message(user_input)
+            if self.tools.single_file:
+                content = self.tools.execute_tool(ToolRequest(name="read_code", args={"path": self.tools.single_file}))
+                self.chat.add_system_message(
+                    f"The results of <tool>read_code</tool> are:\n\n{content}")
+
             resp = self.llm_interface.send_chat(self.chat)
             if not resp:
                 print("🤯 No assistant response 🤯")
@@ -45,7 +54,7 @@ class LLMAgent:
                 self.print_chat_state()
                 tool_results = "TOOL CALL RESULTS:\n"
                 for tc in resp.tool_calls:
-                    result = tools.execute_tool(tc)
+                    result = self.tools.execute_tool(tc)
                     tool_results += f"{tc.call_description}: {result}\n"
                 self.chat.add_system_message(tool_results, pinned=False)
                 self.print_chat_state()
@@ -73,6 +82,16 @@ class LLMAgent:
 
         while True:
             user_input = self.user_interface.get_user_input()
+            if user_input.startswith("file:"):
+                fp = user_input[5:].strip()
+                fp = os.path.abspath(fp)
+                if not os.path.exists(fp):
+                    print(f"{fp} does not exist")
+                else:
+                    self.focused_file = fp
+                    self.tools.single_file = self.focused_file
+                continue
+
             if user_input == "clear":
                 print("🔥 cleared context 🔥")
                 self.chat.clear()

@@ -11,15 +11,18 @@ class ToolBox:
 
     def __init__(self, write_sandbox: str):
         self.file_read_write = FileReadWriteTools(write_sandbox=write_sandbox)
-        self.project_view = ProjectView(root_dir=".", project_dir="media", modules_di="subs")
+        self.project_view = ProjectView(root_dir=".", project_dir="cms", modules_di="subs")
         self.internet = InternetAccess()
+        self.single_file = None
 
     def all_tools(self):
         return {
             "ls": self.file_read_write.read_or_ls,
             "write_file": self.file_read_write.write,
+            "write_code": self.file_read_write.write,
             "rename_file": self.rename_file,
             "read_file": self.file_read_write.read_or_ls,
+            "read_code": self.file_read_write.read_or_ls,
             "delete_file": self.delete_file,
             "copy_file": self.copy_file,
             "backup_file": self.backup_file,
@@ -38,6 +41,9 @@ class ToolBox:
     def execute_tool(self, tool_request: ToolRequest) -> str:
         if tool_request.name.startswith("repo_browser."):
             tool_request.name = tool_request.name.replace("repo_browser.", "")
+
+        if self.single_file:
+            tool_request.args["path"] = self.single_file
 
         tool = self.all_tools().get(tool_request.name)
         if not tool:
